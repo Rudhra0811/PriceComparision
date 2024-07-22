@@ -48,6 +48,15 @@ def snapdeal(soup, url, table):
     else:
         print(f"Failed to extract product details from {url}")
 
+def flipkart(soup, url, table):
+    product_name = soup.find('span', class_='VU-ZEz')
+    product_price = soup.find('div', class_='Nx9bqj CxhGGd')
+
+    if product_name and product_price:
+        table.add_row([tldextract.extract(url).domain.strip(), product_name.text.strip(), product_price.text.strip()])
+    else:
+        print(f"Failed to extract product details from {url}")
+
 # Initialize the table
 table = PrettyTable()
 table.field_names = ["Domain", "Product Name", "Price"]
@@ -81,6 +90,8 @@ if captcha1 is None:
         amazon(soup1, url1, table)
     elif 'snapdeal' in domain1:
         snapdeal(soup1, url1, table)
+    elif 'flipkart' in domain1:
+        flipkart(soup1, url1, table)
     else:
         print(f"Site 1 ({url1}) is not supported")
 else:
@@ -96,6 +107,8 @@ if captcha2 is None:
         amazon(soup2, url2, table)
     elif 'snapdeal' in domain2:
         snapdeal(soup2, url2, table)
+    elif 'flipkart' in domain2:
+        flipkart(soup2, url2, table)
     else:
         print(f"Site 2 ({url2}) is not supported")
 else:

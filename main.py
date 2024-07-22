@@ -34,6 +34,20 @@ def amazon(soup, url, table):
     else:
         print(f"Failed to extract product details from {url}")
 
+def snapdeal(soup, url, table):
+    # Getting the name of the product
+    product_name = soup.find("h1", {"class": "pdp-e-i-head"})
+
+    # Getting the price of the product
+    product_price = soup.find("span", {"class": "payBlkBig"})
+    rupee_symbol = soup.find("span", {"class": "pdp-final-price"})
+
+    if product_name and product_price and rupee_symbol:
+        # Adding the details to the table
+        table.add_row([tldextract.extract(url).domain.strip(), product_name.text.strip(), rupee_symbol.text])
+    else:
+        print(f"Failed to extract product details from {url}")
+
 # Initialize the table
 table = PrettyTable()
 table.field_names = ["Domain", "Product Name", "Price"]
@@ -62,10 +76,13 @@ captcha2 = soup2.find("form", {"name": "captchaForm"})
 
 if captcha1 is None:
     print("Lucky! No Captcha on site 1")
-    if 'amazon' in url1:
+    domain1 = tldextract.extract(url1).domain
+    if 'amazon' in domain1:
         amazon(soup1, url1, table)
+    elif 'snapdeal' in domain1:
+        snapdeal(soup1, url1, table)
     else:
-        print(f"Site 1 ({url1}) is not Amazon")
+        print(f"Site 1 ({url1}) is not supported")
 else:
     print("Captcha found on site 1")
     captcha_image_url1 = soup1.find("img", {"id": "captchaTag"}).get("src")
@@ -74,10 +91,13 @@ else:
 
 if captcha2 is None:
     print("Lucky! No Captcha on site 2")
-    if 'amazon' in url2:
+    domain2 = tldextract.extract(url2).domain
+    if 'amazon' in domain2:
         amazon(soup2, url2, table)
+    elif 'snapdeal' in domain2:
+        snapdeal(soup2, url2, table)
     else:
-        print(f"Site 2 ({url2}) is not Amazon")
+        print(f"Site 2 ({url2}) is not supported")
 else:
     print("Captcha found on site 2")
     captcha_image_url2 = soup2.find("img", {"id": "captchaTag"}).get("src")
